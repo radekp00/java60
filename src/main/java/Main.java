@@ -15,8 +15,12 @@ Poniższe zadania będą się sprowadzały do modyfikacji bazowego kodu. Proces 
 import java.io.IOException;
 import java.util.Scanner;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class WrongStudentName extends Exception { }
+class WrongAge extends Exception { }
+class WrongDateOfBirth extends Exception { }
 
 class Main {
     public static Scanner scan = new Scanner(System.in);
@@ -35,6 +39,10 @@ class Main {
 
             } catch(WrongStudentName e) {
                 System.out.println("Błędne imie studenta!");
+            } catch(WrongDateOfBirth e) {
+                System.out.println("Błedna data urodzenia");
+            } catch(WrongAge e) {
+                System.out.println("Błędny wiek");
             }
         }
     }
@@ -58,13 +66,25 @@ class Main {
         return name;
     }
 
-    public static void exercise1() throws IOException, WrongStudentName {
+    public static void exercise1() throws IOException, WrongStudentName, WrongAge, WrongDateOfBirth{
         var name = ReadName();
         System.out.println("Podaj wiek: ");
         var age = scan.nextInt();
+        Pattern pattern = Pattern.compile("^[0-9]$|^[1-9][0-9]$|^(100)$",
+            Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(String.valueOf(age));
+        if(!matcher.find()){
+            throw new WrongAge();
+        }
         scan.nextLine();
         System.out.println("Podaj datę urodzenia DD-MM-YYY");
         var date = scan.nextLine();
+        pattern = Pattern.compile("^(?:0[1-9]|[12]\\d|3[01])([-])(?:0[1-9]|1[012])\\1(?:19|20)\\d\\d$",
+            Pattern.CASE_INSENSITIVE);
+        matcher = pattern.matcher(date);
+        if(!matcher.find()){
+            throw new WrongDateOfBirth();
+        }
         (new Service()).addStudent(new Student(name, age, date));
     }
 
