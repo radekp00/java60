@@ -15,7 +15,7 @@ public class Service {
         b.close();
     }
 
-    public Collection<Student> getStudents() throws IOException {
+    public Collection<Student> getStudents() throws IOException{
         var ret = new ArrayList<Student>();
         var f = new FileReader("db.txt");
         var reader = new BufferedReader(f);
@@ -24,13 +24,23 @@ public class Service {
             line = reader.readLine();
             if(line == null)
                 break;
-            ret.add(Student.Parse(line));
+            try{
+                Student student = Student.Parse(line);
+                ret.add(student);
+            }
+            catch(IOException e){
+                System.out.println("Błąd wczytywania z bazy danych");
+            }
+            catch(WrongStudentDB e){
+                System.out.println("Błąd wczytywania z bazy danych");
+            }
+
         }
         reader.close();
         return ret;
     }
 
-    public Student findStudentByName(String name) throws IOException {
+    public Student findStudentByName(String name) throws IOException{
         var students = this.getStudents();
         for(Student current : students) {
             if(current.GetName().equals(name))
